@@ -7,6 +7,7 @@ The use of this driver fixes an admin area issue with PrestaShop 8.2.0 on local 
 Copy [PrestaShopValetDriver.php] to your ~/.valet/Drivers folder
 
 # Changelog
+- 2025-10-29 - Upgrade the valet driver to support PrestaShop api calls locally via valet
 - 2021-10-07 - Initial version
 
 # Thanks
