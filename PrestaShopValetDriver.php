@@ -116,7 +116,25 @@ class PrestaShopValetDriver extends ValetDriver {
      */
     public function frontControllerPath(string $sitePath, string $siteName, string $uri): ?string
     {
-        // Legacy URLs
+        // API/Webservice endpoints
+        if (preg_match('#^/api/?#', $uri) || preg_match('#^/webservice/#', $uri)) {
+            $dispatcher = $sitePath . '/webservice/dispatcher.php';
+            if (file_exists($dispatcher)) {
+                $_SERVER['SCRIPT_FILENAME'] = $dispatcher;
+                $_SERVER['SCRIPT_NAME'] = '/webservice/dispatcher.php';
+
+                // Extract the resource path from URI for PrestaShop API
+                if (preg_match('#^/api/(.*)#', $uri, $matches)) {
+                    $_GET['url'] = $matches[1];
+                } elseif (preg_match('#^/webservice/(.*)#', $uri, $matches)) {
+                    $_GET['url'] = $matches[1];
+                }
+
+                return $dispatcher;
+            }
+        }
+
+        // Legacy URLs - Admin panel
         $parts = explode('/', $uri);
         if (isset($parts[1]) && $parts[1] !== '' && file_exists($adminIndex = $sitePath . '/' . $parts[1] . '/index.php')) {
             $_SERVER['SCRIPT_FILENAME'] = $adminIndex;
@@ -131,6 +149,6 @@ class PrestaShopValetDriver extends ValetDriver {
         // Default front controller
         $_SERVER['SCRIPT_NAME'] = '/index.php';
         $_SERVER['SCRIPT_FILENAME'] = $sitePath . '/index.php';
-        return $sitePath . '/index.php'; 
+        return $sitePath . '/index.php';
     }
 }
